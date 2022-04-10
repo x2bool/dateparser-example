@@ -86,14 +86,22 @@ export const parseYear = parseNumber(2000, 2020);
 export const parseDate: P.Parser<string, Date> = (() => {
     const the = P.optional(S.string("the "));
 
-    const st = S.string("st");
-    const nd = S.string("nd");
-    const rd = S.string("rd");
-    const th = S.string("th");
-
-    const nth = P.optional(
-        P.alt(() => P.alt(() => P.alt(() => st)(nd))(rd))(th)
+    const st = pipe(S.string("1st"), P.map(() => 1));
+    const nd = pipe(S.string("2nd"), P.map(() => 2));
+    const rd = pipe(S.string("3rd"), P.map(() => 3));
+    const th = pipe(
+        parseDay,
+        P.map(d => P.map(() => d)(S.string("th"))),
+        P.flatten
     );
+
+    const nth = pipe(
+        st,
+        P.alt(() => nd),
+        P.alt(() => rd),
+        P.alt(() => th),
+        P.alt(() => parseDay)
+    )
 
     const of = P.chain(() => P.optional(S.string("of ")))(S.string(" "));
 
@@ -101,9 +109,7 @@ export const parseDate: P.Parser<string, Date> = (() => {
 
     return pipe(
         the,
-        P.chain(() => parseDay),
-        P.map(d => P.map(() => d)(nth)),
-        P.flatten,
+        P.chain(() => nth),
         P.map(d => P.map(() => d)(of)),
         P.flatten,
         P.map(d => P.map(m => [d, m])(parseAnyMonth)),

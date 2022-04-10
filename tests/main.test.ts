@@ -86,6 +86,42 @@ describe('date parser tests', () => {
         ));
     });
 
+    test('Parse date parses "1st Jan 2019"', () => {
+        let result = run(parseDate, "1st Jan 2019");
+        pipe(result, E.match(
+            e => { throw e; },
+            date => {
+                expect(date.getFullYear()).toBe(2019);
+                expect(date.getMonth()).toBe(0);
+                expect(date.getDate()).toBe(1);
+            }
+        ));
+    });
+
+    test('Parse date parses "2nd Jan 2019"', () => {
+        let result = run(parseDate, "2nd Jan 2019");
+        pipe(result, E.match(
+            e => { throw e; },
+            date => {
+                expect(date.getFullYear()).toBe(2019);
+                expect(date.getMonth()).toBe(0);
+                expect(date.getDate()).toBe(2);
+            }
+        ));
+    });
+
+    test('Parse date parses "3rd Jan 2019"', () => {
+        let result = run(parseDate, "3rd Jan 2019");
+        pipe(result, E.match(
+            e => { throw e; },
+            date => {
+                expect(date.getFullYear()).toBe(2019);
+                expect(date.getMonth()).toBe(0);
+                expect(date.getDate()).toBe(3);
+            }
+        ));
+    });
+
     test('Parse date parses "6 September 2019"', () => {
         let result = run(parseDate, "6 September 2019");
         pipe(result, E.match(
